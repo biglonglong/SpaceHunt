@@ -31,6 +31,7 @@
 > | 13   | 添加另一个光源                           |
 > | 14   | 行星的法线贴图                           |
 > | 15   | 更多种类obj                              |
+> | 16   | …                                        |
 
 - 模型、VAO、VBO、EBO：spacecraft, planet, rock, satellite, craft, aircarrier
 - 着色器：ourNormalShader, ourLightShader, ourSkyboxShader, ourSampleShader, ourNormalMapShader
@@ -41,7 +42,7 @@
   - 太空车：craftmount、movement_length、movement_circle、movement_cycle
   - 战机：invincible_time
   - 机制：golden_mount、relive_mount、aircarrierPositions
-- 函数
+- 对象函数
   - 计时器 `bool Clocker(double starttime, double cycle)`
   - 距离检查 `int DistanceCheck(glm::vec3 originpos, glm::mat4 model, float threshold1, float threshold2)`
   - 机制逻辑 `void ArrestLogic()   void SucessLogic()`
@@ -54,29 +55,25 @@
 
 ### 岩石 RandMatrics
 
-> 采用带有RandMatrics的实例化着色器（减少GPU-CPU通信）。利用两次model矩阵实现公转
+> 采用带有RandMatrics的实例化着色器（减少GPU-CPU通信）；利用两次model矩阵实现公转
 
-```
+```C++
 gl_Position = projection * view * model* aInstanceMatrix[gl_InstanceID] * vec4(aPos, 1.0);
 ```
 
 ```C++
-float displacement = (rand() % (int)(2 * rotation_offset * 100)) / 100.0f - rotation_offset;  //displacement in [-offset,offset] regulatly
-
-glm::mat4 modelsample = glm::translate(glm::mat4(1.0f), glm::vec3(sin(glm::radians(float(i))) * rotation_radius + displacement, displacement, cos(glm::radians(float(i)))*rotation_radius + displacement));
+glm::mat4 modelsample = glm::translate(glm::mat4(1.0f),glm::vec3(sin(glm::radians(float(i))) * rotation_radius + displacement,displacement,cos(glm::radians(float(i)))*rotation_radius + displacement));
 
 modelsample = glm::rotate(modelsample, glm::radians(static_cast<float>((rand() % 360))), glm::vec3(0.4f, 0.6f, 0.8f));
-
-float scale = static_cast<float>((rand() % 50) / 1000.0 + 0.02);
-modelsample = glm::scale(modelsample, glm::vec3(scale));
-rockmodelMatrices[i] = modelsample;
 ```
 
-```
+```C++
 model = glm::translate(glm::mat4(1.0f), system_position);
-model = glm::rotate(model, glm::radians(rotation_speed * static_cast<float>(glfwGetTime())), rotation_direction);
-...
-glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(rock.indices.size()), GL_UNSIGNED_INT, 0, rockmount);	
+model = glm::rotate(model, glm::radians(rotation_speed *float(glfwGetTime())), rotation_direction);	
+```
+
+```C++
+glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(rock.indices.size()), GL_UNSIGNED_INT, 0, rockmount);
 ```
 
 
@@ -86,19 +83,14 @@ glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(rock.indices.siz
 > 利用一次model矩阵实现公转；黄金采集中止渲染
 
 ```C++
-float displacement = 2 * i * rotation_offset / goldmount - rotation_offset;   ////displacement in [-offset,offset] unregulatly
-
 glm::mat4 modelsample = glm::translate(glm::mat4(1.0f), system_position + glm::vec3(displacement));
 
 modelsample = glm::rotate(modelsample, glm::radians(rotation_speed * static_cast<float>(glfwGetTime())), rotation_direction);
 
 modelsample = glm::translate(modelsample,glm::vec3(sin(float(i)) * rotation_radius + displacement, displacement, cos(float(i)) * rotation_radius + displacement));
-
-modelsample = glm::scale(modelsample, glm::vec3(0.1 / i + 0.02));
-goldmodelMatrices[i] = modelsample;
 ```
 
-```
+```c++
 if (goldGeted[goldnum]) continue;
 ```
 
@@ -108,7 +100,7 @@ if (goldGeted[goldnum]) continue;
 
 > 两个相关向量决定星球与卫星法向
 
-```
+```C++
 model = glm::rotate(model, glm::radians(rotation_speed * 30 * static_cast<float>(glfwGetTime())), system_position - glm::vec3(model[3][0], model[3][1], model[3][2]));
 ```
 
@@ -118,13 +110,13 @@ model = glm::rotate(model, glm::radians(rotation_speed * 30 * static_cast<float>
 
 > 关于距离 战机回收机制
 
-```
+```C++
 float distance = DistanceCheck(camera.Position, model, 10.0, 8.0);
 if (distance == -1 && goldgetednum>=golden_mount) {
-view_angle += glm::vec3(0.0f,0.01f,0.0f);
-counter++;
+	view_angle += glm::vec3(0.0f,0.01f,0.0f);
+	counter++;
 if (counter >= 100) {
-SucessLogic();
+	SucessLogic();
 } 
 ```
 
@@ -134,22 +126,18 @@ SucessLogic();
 
 > 一个关于时间的参数方程
 
-```
+```C++
 model = glm::translate(glm::mat4(1.0f), glm::vec3(movement_circle * cos(movement_cycle*5*glfwGetTime()+craftnum), movement_circle * sin(movement_cycle*5*glfwGetTime()+craftnum),-movement_length+movement_length *sin(movement_cycle*(glfwGetTime()+craftnum))));	
 ```
-
-
 
 #### “雷达”
 
 > 无意之间发现的，可能是混合与模板测试共同造成的结果
 
-```
+```C++
 glEnable(GL_BLEND);
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-```
 
-```
 glStencilFunc(GL_ALWAYS, 1, 0xFF);
 glStencilMask(0xFF);
 ...
@@ -164,7 +152,7 @@ glDisable(GL_DEPTH_TEST);
 
 > 普普通通的天空盒罢了，没什么特别的，记得关闭深度测试
 
-```
+```C++
 glDepthFunc(GL_LEQUAL);
 ourSkyboxShader.use();
 glBindVertexArray(VAO[0]);
@@ -180,21 +168,25 @@ glDepthFunc(GL_LESS);
 
 > 两个纹理变换机制；一个视角固定方法；四个移动效果(速度函数)
 
-```
+```C++
 if (Clocker(invincible_starttime, invincible_time)) {
-craftTexture.bind(0);
+	craftTexture.bind(0);
 }
 if (goldgetednum>=golden_mount) {
-goldTexture.bind(0);
+	goldTexture.bind(0);
 }
-...
+```
+
+```C++
 view = glm::mat4(1.0f);
 ourLightShader.setMat4("view", view);
-...
+
+```
+
+```C++
 if (left_rotation_flag) {
-model = glm::rotate(model, glm::radians(direction_rotation_angle), glm::vec3(0.0f, 0.0f, -1.0f));
+	model = glm::rotate(model, glm::radians(direction_rotation_angle), glm::vec3(0.0f, 0.0f, -1.0f));
 }	
-...
 ```
 
 
@@ -203,7 +195,7 @@ model = glm::rotate(model, glm::radians(direction_rotation_angle), glm::vec3(0.0
 
 > 采用带法向贴图的着色器进行光照渲染；一个自转机制
 
-```
+```C++
 planetTexture.bind(0);
 planetTexture.bind(1);
 planetNormal.bind(2);
@@ -231,9 +223,7 @@ int DistanceCheck(...) {
 	if (distance >= threshold1) return 0;
 	else if (distance >= threshold2) return 1;
 	else if (distance < threshold2) return -1;
-	else {
-		...
-	}
+	...
 }
 ```
 

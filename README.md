@@ -4,24 +4,24 @@
 
 ![image-20230527143309378](img/image-20230527143309378.png)
 
+**[开始](.\exe\Form.exe)** （如果不进行项目开发，可直接双击exe体验）
+
 
 
 ## 准备
 
-- ###### [开始](.\exe\Form.exe) （如果不进行项目开发，可直接双击exe体验）
-
-- ###### 开发工具
+- 开发工具
 
   - Visual Studio（OpenGL）
 
-- ###### 安装
+- 安装
 
   1. 创建项目，添加code文件中.h、.cpp
 
   2. VS中打开项目属性配置
 
-  3. 链接器 $\rightarrow$ 常规 $\rightarrow$ 附加库目录 
-  
+  3. 链接器 $\rightarrow$ 常规 $\rightarrow$ 附加库目录
+
      ```
      .\Dependencies\glm
      .\Dependencies\glew
@@ -30,7 +30,7 @@
      ```
 
   4. 链接器 $\rightarrow$ 输入 $\rightarrow$ 附加依赖项
-  
+
      ```
      opengl32.lib
      glfw3.lib
@@ -69,21 +69,19 @@
 
 ## 贡献
 
-您所做的任何commit都**非常感谢!!!**
+> 您所做的任何commit都**非常感谢**！！！
 
-如果您有建议可以使其更好，请 fork仓库并创建一个pull request。您也可以简单地使用issue
+如果您有建议可以使其更好，请 fork仓库并创建一个pull request；您也可以简单地使用issue。别忘了给项目打一颗==star:star:==！再次感谢！
 
-别忘了给项目打一颗==star:star:==！再次感谢！
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork该项目
+2. Clone 且 Create你自己的Dev分支 (`gitclone ... /git checkout -b dev`)
+3. Commit你的修改 (`git commit -m 'Features'`)
+4. Push你的Dev分支 (`git push origin Dev`)
+5. Pull Request申请
 
 
 
-## Contact
+## 联系
 
 Github：[biglonglong](https://github.com/biglonglong)
 
